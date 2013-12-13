@@ -17,11 +17,11 @@ Net::Dogstatsd - Perl client to Datadog's dogstatsd metrics collector.
 
 =head1 VERSION
 
-Version 1.0.1
+Version 1.0.2
 
 =cut
 
-our $VERSION = '1.0.1';
+our $VERSION = '1.0.2';
 
 
 =head1 SYNOPSIS
@@ -134,9 +134,9 @@ sub new
 	my ( $class, %args ) = @_;
 	
 	# Defaults
-	my $host = $args{'host'} // '127.0.0.1';
-	my $port = $args{'port'} // '8125';
-	my $verbose = $args{'verbose'} // 0;
+	my $host = defined( $args{'host'} ) ? $args{'host'} : '127.0.0.1';
+	my $port = defined( $args{'port'} ) ? $args{'port'} : '8125';
+	my $verbose = defined( $args{'verbose'} ) ? $args{'verbose'} : 0;
 	
 	my $self = {
 		host             => $host,
@@ -622,7 +622,10 @@ sub _send_metric
 		if $args{'name'} ne $original_name;
 	
 	# Default sample rate = 1
-	$args{'sample_rate'} //= 1;
+	if( !defined( $args{'sample_rate'} ) )
+	{
+		$args{'sample_rate'} = 1;
+	}
 	
 	my $socket = $self->get_socket();
 	return unless defined $socket;
